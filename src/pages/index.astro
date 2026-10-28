@@ -1,8 +1,9 @@
 ---
-import Contador from '../components/Contador';
+import Hero from '../components/Hero';
+import '../styles/global.css';
 ---
 
-<html lang="es">
+<html lang="es" class="dark">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -11,24 +12,7 @@ import Contador from '../components/Contador';
     <meta name="generator" content={Astro.generator} />
     <title>César Bugueño | Portafolio</title>
   </head>
-  <body>
-    <main>
-      <h1>César Bugueño</h1>
-      <p>Desarrollador de software. Portafolio en construcción.</p>
-      <Contador client:load />
-    </main>
+  <body class="bg-background text-foreground min-h-screen grid place-items-center p-4">
+    <Hero client:load />
   </body>
 </html>
-
-<style>
-  body {
-    font-family: system-ui, sans-serif;
-    margin: 0;
-    min-height: 100vh;
-    display: grid;
-    place-items: center;
-    background: #0f172a;
-    color: #e2e8f0;
-  }
-  main { text-align: center; }
-</style>
