@@ -1,16 +1,34 @@
 ---
+import Contador from '../components/Contador';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>César Bugueño | Portafolio</title>
+  </head>
+  <body>
+    <main>
+      <h1>César Bugueño</h1>
+      <p>Desarrollador de software. Portafolio en construcción.</p>
+      <Contador client:load />
+    </main>
+  </body>
 </html>
+
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    background: #0f172a;
+    color: #e2e8f0;
+  }
+  main { text-align: center; }
+</style>
