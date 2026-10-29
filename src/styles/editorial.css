@@ -328,3 +328,18 @@ html.motion-paused *, html.motion-paused *::before, html.motion-paused *::after 
 
 /* Indicador de scroll cobre en la versión editorial */
 body.portfolio-editorial #scroll-progress { background: #b7472a; }
+
+/* Secure Vault: the hero has its own system narrative and room for a data panel. */
+.ed-hero { grid-template-columns: minmax(0,.87fr) minmax(0,1.13fr); min-height:0; gap:clamp(1rem,3.5vw,4rem); align-items:center; }
+.ed-hero__headline { font-size:clamp(3.05rem,5.35vw,6.7rem); }
+.ed-hero__visual { display:block; min-height:0; align-self:center; }
+.ed-hero__copy { padding-block:2rem; }
+@media(max-width:1050px) {
+  .ed-hero { grid-template-columns:minmax(0,.88fr) minmax(0,1.12fr); }
+  .ed-hero__headline { font-size:clamp(2.8rem,5.0vw,5rem); }
+}
+@media(max-width:760px) {
+  .ed-hero { display:flex; flex-direction:column; gap:2.6rem; padding-block:3.9rem 3rem; }
+  .ed-hero__copy { padding:0; }
+  .ed-hero__visual { width:100%; max-width:650px; margin:0; }
+}

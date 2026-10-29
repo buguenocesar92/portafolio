@@ -1,8 +1,9 @@
 ---
 import '../styles/editorial.css';
+import '../styles/vault.css';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import EditorialNav from './EditorialNav.astro';
-import ForgeVisual from './forge/ForgeVisual';
+import SecureVault from './vault/SecureVault';
 import InfrastructureExperience from './infrastructure/InfrastructureExperience';
 import ArchitectureDiagram from './infrastructure/ArchitectureDiagram.astro';
 import ScrollProgress from './motion/ScrollProgress.astro';
@@ -46,7 +47,7 @@ const technologies = Array.from(new Set(projects.flatMap((project) => project.ch
           </div>
         </div>
         <div class="ed-hero__visual">
-          <ForgeVisual client:visible title={e.artTitle} caption={e.artCaption} hint={e.artHint} />
+          <SecureVault client:visible lang={lang} />
         </div>
       </section>
 
