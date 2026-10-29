@@ -25,6 +25,8 @@ jobs:
         run: npm ci
       - name: Static motion guards
         run: npm run check:motion
+      - name: Secure Vault static checks
+        run: node scripts/check-vault.mjs
       - name: Astro production build
         run: npm run build
       - name: Check dist for secrets

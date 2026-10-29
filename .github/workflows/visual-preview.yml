@@ -1,0 +1,56 @@
+name: Visual Preview — Editorial Portfolio
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'package*.json'
+      - '.github/workflows/visual-preview.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  screenshots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install
+        run: npm ci
+      - name: Build static HTML
+        run: npm run build
+      - name: Install Chromium for visual review
+        run: npx --yes playwright@1.56.1 install chromium --with-deps
+      - name: Launch local preview
+        shell: bash
+        run: |
+          mkdir -p previews
+          nohup npm run preview -- --host 127.0.0.1 > /tmp/astro-preview.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4321/ > /dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/astro-preview.log
+          exit 1
+      - name: Install browser test runtime (not saved to project lockfile)
+        run: npm install --no-save --package-lock=false playwright@1.56.1
+      - name: Verify Vault interactions and fallbacks
+        run: node scripts/verify-vault-browser.mjs
+      - name: Capture desktop ES/EN and mobile screenshots
+        run: |
+          npx --yes playwright@1.56.1 screenshot --browser chromium --full-page --wait-for-timeout 1600 --viewport-size="1440,900" http://127.0.0.1:4321/ previews/desktop-es.png
+          npx --yes playwright@1.56.1 screenshot --browser chromium --full-page --wait-for-timeout 1600 --viewport-size="1440,900" http://127.0.0.1:4321/en/ previews/desktop-en.png
+          npx --yes playwright@1.56.1 screenshot --browser chromium --full-page --wait-for-timeout 1600 --viewport-size="390,844" http://127.0.0.1:4321/ previews/mobile-es.png
+      - name: Publish review screenshots (not deployed)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: portfolio-editorial-preview
+          path: previews/
+          if-no-files-found: warn
+          retention-days: 10

@@ -13,9 +13,16 @@ export default function InfrastructureExperience(props: Props) {
   const reduceMotion = useReducedMotion();
   const [capable, setCapable] = useState(false);
   const onFailure = useCallback(() => setCapable(false), []);
+  const [userMotionAllowed, setUserMotionAllowed] = useState(true);
   useEffect(() => {
-    setCapable(!reduceMotion && canRender3D());
-  }, [reduceMotion]);
+    const sync = () => setUserMotionAllowed(!document.documentElement.classList.contains('motion-paused'));
+    sync();
+    window.addEventListener('portfolio-motion-change', sync);
+    return () => window.removeEventListener('portfolio-motion-change', sync);
+  }, []);
+  useEffect(() => {
+    setCapable(userMotionAllowed && !reduceMotion && canRender3D());
+  }, [reduceMotion, userMotionAllowed]);
   if (!capable) return <InfrastructureBlueprint layers={props.layers} title={props.title} hint={props.hint} />;
   return (
     <Suspense fallback={<InfrastructureBlueprint layers={props.layers} title={props.title} hint={props.hint} />}>

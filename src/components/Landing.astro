@@ -1,106 +1,264 @@
 ---
+import '../styles/editorial.css';
+import '../styles/vault.css';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import StatusBar from './StatusBar.astro';
+import EditorialNav from './EditorialNav.astro';
+import SecureVault from './vault/SecureVault';
+import { VAULT_COPY } from './vault/vaultData';
 import InfrastructureExperience from './infrastructure/InfrastructureExperience';
 import ArchitectureDiagram from './infrastructure/ArchitectureDiagram.astro';
-import CaseCard from './CaseCard.astro';
-import SpotlightCard from './motion/SpotlightCard.astro';
-import TerminalTyper from './motion/TerminalTyper.astro';
-import MagneticButton from './motion/MagneticButton.astro';
-import MarqueeTags from './motion/MarqueeTags.astro';
 import ScrollProgress from './motion/ScrollProgress.astro';
-import ScrambleHeading from './motion/ScrambleHeading.astro';
-import { ui, blueprint, showcase, type Lang } from '../i18n/ui';
+import { editorial, ui, blueprint, showcase, type Lang } from '../i18n/ui';
 import { getCasesByLang } from '../lib/cms';
+import { SITE } from '../data/site';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
+const e = editorial[lang];
 const t = ui[lang];
 const cases = await getCasesByLang(lang);
-const tags = Array.from(new Set(showcase[lang].flatMap((project) => project.chips)));
-const accent = {
-  amber: 'border-amber-forge/40 text-amber-forge',
-  emerald: 'border-emerald-term/40 text-emerald-term',
-} as const;
+const projects = showcase[lang];
+const technologies = Array.from(new Set(projects.flatMap((project) => project.chips))).slice(0, 12);
 ---
-<BaseLayout lang={lang} alternates={{ es: '/', en: '/en/' }}>
-  <ScrollProgress label={t.hudBuild} />
-  <StatusBar {lang} />
-  <main id="main" class="mx-auto max-w-6xl px-4">
-    <section class="relative py-16 sm:py-28" aria-labelledby="hero-title">
-      <div class="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_50%_5%,rgba(16,185,129,.085),transparent_55%)]" aria-hidden="true"></div>
-      <TerminalTyper command={t.heroCommand} />
-      <h1 id="hero-title" data-split-reveal class="mt-7 max-w-5xl text-4xl leading-tight font-bold tracking-tight text-slate-50 sm:text-5xl lg:text-6xl">
-        {t.h1}
-      </h1>
-      <p class="mt-6 max-w-3xl text-base leading-relaxed text-slate-300 sm:text-lg">{t.subtitle}</p>
-      <div class="mt-9 flex flex-wrap gap-3">
-        <MagneticButton href="#hefesto">[{t.ctaPrimary}]</MagneticButton>
-        <MagneticButton href="#cases" variant="secondary">[{t.ctaSecondary}]</MagneticButton>
-      </div>
-    </section>
+<BaseLayout lang={lang} visual="editorial" alternates={{ es: '/', en: '/en/' }}>
+  <ScrollProgress label={e.buildLabel} />
+  <EditorialNav {lang} />
 
-    <MarqueeTags tags={tags} label={t.marqueeLabel} />
-
-    <section id="hefesto" class="scroll-mt-24 py-20" aria-labelledby="blueprint-title">
-      <h2 id="blueprint-title" class="mb-6 font-mono text-sm tracking-widest text-emerald-term uppercase">
-        // {t.blueprintTitle}
-      </h2>
-      <InfrastructureExperience client:visible layers={blueprint[lang]} title={t.blueprintTitle} hint={t.blueprintHint} schematicLabel={t.schematicLabel} />
-      <div class="mt-5">
-        <ArchitectureDiagram
-          title={t.diagramTitle}
-          description={t.diagramDescription}
-          labels={t.diagramNodes}
-        />
-      </div>
-    </section>
-
-    <section class="pb-20" aria-labelledby="showcase-title">
-      <ScrambleHeading id="showcase-title" as="h2" text={t.showcaseTitle} class="mb-6 font-mono text-sm tracking-widest text-amber-forge uppercase" />
-      <div class="grid gap-4 md:grid-cols-2">
-        {showcase[lang].map((s) => (
-          <SpotlightCard accent={s.accent} class={s.wide ? 'md:col-span-2' : ''}>
-            <p class:list={['inline-block rounded border px-2 py-0.5 font-mono text-xs', accent[s.accent]]}>{s.tag}</p>
-            <h3 class="mt-4 text-xl font-semibold text-slate-100">{s.title}</h3>
-            <p class="mt-3 max-w-3xl text-sm leading-relaxed text-slate-300">{s.body}</p>
-            <ul class="mt-5 flex flex-wrap gap-2">
-              {s.chips.map((chip) => (
-                <li class="rounded border border-slate-800/80 bg-obsidian px-2 py-1 font-mono text-[11px] text-slate-300">{chip}</li>
-              ))}
-            </ul>
-          </SpotlightCard>
-        ))}
-      </div>
-    </section>
-
-    <section id="cases" class="scroll-mt-24 pb-24" aria-labelledby="cases-title" data-reveal>
-      <h2 id="cases-title" class="mb-6 font-mono text-sm tracking-widest text-emerald-term uppercase">// {t.casesTitle}</h2>
-      {cases.length === 0 ? (
-        <p class="font-mono text-sm text-slate-400">{t.casesEmpty}</p>
-      ) : (
-        <div class="grid gap-4 md:grid-cols-2">
-          {cases.map((item) => <CaseCard case={item} lang={lang} />)}
+  <main id="main">
+    <div class="ed-container">
+      <section class="ed-hero" aria-labelledby="ed-hero-heading">
+        <div class="ed-hero__copy">
+          <p class="ed-kicker" data-reveal>{e.kicker}</p>
+          <h1 class="ed-hero__headline" id="ed-hero-heading" data-reveal>
+            <span>{e.headline.first}</span>
+            <span>{e.headline.second}</span>
+            <em>{e.headline.accent}</em>
+          </h1>
+          <p class="ed-hero__lead" data-reveal>{e.lead}</p>
+          <div class="ed-hero__actions" data-reveal>
+            <a class="ed-cta ed-cta--primary" data-magnetic href="#work">
+              {e.ctaWork}<span aria-hidden="true">↗</span>
+            </a>
+            <a class="ed-cta ed-cta--outline" href="#architecture">
+              {e.ctaArchitecture}<span aria-hidden="true">↘</span>
+            </a>
+          </div>
+          <div class="ed-hero__foot" data-reveal>
+            <span aria-hidden="true"></span><span>{e.heroNote}</span>
+          </div>
         </div>
-      )}
+        <div class="ed-hero__visual">
+          <SecureVault client:visible lang={lang} />
+          <noscript>
+            <section class="vault__noscript" aria-label={VAULT_COPY[lang].title}>
+              <h2>{VAULT_COPY[lang].title}</h2>
+              <p>{VAULT_COPY[lang].subtitle}</p>
+              {VAULT_COPY[lang].nodeList.map((node) => (
+                <article>
+                  <h3>{node.title}</h3>
+                  <p>{node.summary}</p>
+                  <ul>{node.layers.map((step) => <li>{step}</li>)}</ul>
+                  <p>{node.verification}</p>
+                </article>
+              ))}
+            </section>
+          </noscript>
+        </div>
+      </section>
+
+      <div class="ed-rail">
+        <p class="ed-rail__label">{e.railLabel}</p>
+        <ul class="ed-rail__tags">
+          {technologies.map((technology) => <li>{technology}</li>)}
+        </ul>
+      </div>
+
+      <section class="ed-section" id="work" aria-labelledby="ed-work-heading">
+        <div class="ed-section__label">
+          <div>
+            <span class="ed-section__eyebrow" data-reveal>{e.workEyebrow}</span>
+            <h2 id="ed-work-heading" class="ed-section__heading" data-reveal>
+              {e.workTitle}<br /><em>{e.workAccent}</em>
+            </h2>
+          </div>
+          <p data-reveal>{e.workIntro}</p>
+        </div>
+
+        <div class="ed-work">
+          <article class="ed-feature" data-spotlight data-reveal>
+            <div class="ed-feature__top">
+              <span>{e.featureLabel}</span><span>01 / 03</span>
+            </div>
+            <div class="ed-feature__visual" aria-hidden="true">
+              <svg viewBox="0 0 620 380" class="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMid slice">
+                <defs>
+                  <radialGradient id="ed-path-glow">
+                    <stop stop-color="#af5436" stop-opacity=".24"/>
+                    <stop offset="1" stop-color="#af5436" stop-opacity="0"/>
+                  </radialGradient>
+                </defs>
+                <circle cx="305" cy="175" r="220" fill="url(#ed-path-glow)"/>
+                <g stroke="#d3ac88" stroke-opacity=".26" fill="none">
+                  <ellipse cx="310" cy="180" rx="208" ry="75" transform="rotate(-24 310 180)"/>
+                  <ellipse cx="310" cy="180" rx="230" ry="63" transform="rotate(35 310 180)"/>
+                  <circle cx="310" cy="180" r="170" stroke-dasharray="2 14"/>
+                  <path d="M38 292 L580 70 M50 56 L552 295" stroke-dasharray="5 10"/>
+                </g>
+              </svg>
+              <div class="ed-feature__path"><span>hefesto</span><br /><strong>scaffold</strong></div>
+              <code class="ed-feature__terminal">{e.featureCommand}</code>
+            </div>
+            <h3>{projects[0].title}</h3>
+            <p>{projects[0].body}</p>
+            <ul class="ed-chips">
+              {projects[0].chips.map((chip) => <li>{chip}</li>)}
+            </ul>
+          </article>
+
+          <div class="ed-work__side">
+            <article class="ed-work-card" data-spotlight data-reveal>
+              <div>
+                <span class="ed-work-card__number">02 / {projects[1].tag}</span>
+                <h3>{projects[1].title}</h3>
+                <p>{projects[1].body}</p>
+                <ul class="ed-chips">{projects[1].chips.slice(0, 3).map((chip) => <li>{chip}</li>)}</ul>
+              </div>
+              <div class="ed-work-card__graphic" aria-hidden="true">
+                <svg viewBox="0 0 180 180" fill="none">
+                  <circle cx="90" cy="90" r="70" stroke="#a85437" stroke-opacity=".24"/>
+                  <circle cx="90" cy="90" r="49" stroke="#a85437" stroke-opacity=".4" stroke-dasharray="5 8"/>
+                  <path d="M90 28 142 59 142 119 90 150 38 119 38 59Z" stroke="#a85437" stroke-width="1.5" fill="#eac1a31c"/>
+                  <path d="M90 28 90 150 M38 59 142 119 M142 59 38 119" stroke="#a85437" stroke-opacity=".5"/>
+                  <circle cx="90" cy="90" r="14" fill="#b7472a"/>
+                </svg>
+              </div>
+            </article>
+            <article class="ed-work-card" data-spotlight data-reveal>
+              <div>
+                <span class="ed-work-card__number">03 / {projects[2].tag}</span>
+                <h3>{projects[2].title}</h3>
+                <p>{projects[2].body}</p>
+                <ul class="ed-chips">{projects[2].chips.slice(0, 3).map((chip) => <li>{chip}</li>)}</ul>
+              </div>
+              <div class="ed-work-card__graphic" aria-hidden="true">
+                <svg viewBox="0 0 180 180" fill="none">
+                  <path d="M10 112 H170 M90 12 V168" stroke="#a85437" stroke-opacity=".23" stroke-dasharray="3 8"/>
+                  <circle cx="90" cy="90" r="65" stroke="#a85437" stroke-opacity=".3"/>
+                  <path d="M18 98 46 98 58 57 75 131 93 38 113 116 135 75 145 98 162 98" stroke="#b7472a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="93" cy="38" r="6" fill="#b7472a"/>
+                </svg>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section id="architecture" class="ed-architecture" aria-labelledby="ed-architecture-heading">
+      <div class="ed-container">
+        <div class="ed-architecture__content">
+          <div class="ed-architecture__copy">
+            <span class="ed-section__eyebrow" data-reveal>{e.architectureEyebrow}</span>
+            <h2 class="ed-section__heading" id="ed-architecture-heading" data-reveal>
+              {e.architectureTitle}<br /><em>{e.architectureAccent}</em>
+            </h2>
+            <p class="mt-8 max-w-xl text-lg leading-relaxed text-stone-300" data-reveal>{e.architectureIntro}</p>
+            <p class="ed-architecture__note">{e.architectureFootnote}</p>
+          </div>
+          <div class="ed-architecture__diagram">
+            <InfrastructureExperience client:visible
+              layers={blueprint[lang]}
+              title={e.architectureVisual}
+              hint={t.blueprintHint}
+              schematicLabel={t.schematicLabel}
+            />
+          </div>
+        </div>
+        <div class="ed-architecture__pipeline" data-reveal>
+          <ArchitectureDiagram
+            title={t.diagramTitle}
+            description={t.diagramDescription}
+            labels={t.diagramNodes}
+          />
+        </div>
+      </div>
+    </section>
+
+    <section id="cases" class="ed-cases ed-section" aria-labelledby="ed-cases-heading">
+      <div class="ed-container">
+        <div class="ed-section__label">
+          <div>
+            <span class="ed-section__eyebrow" data-reveal>{e.casesEyebrow}</span>
+            <h2 id="ed-cases-heading" class="ed-section__heading" data-reveal>
+              {e.casesTitle}<br /><em>{e.casesAccent}</em>
+            </h2>
+          </div>
+          <p data-reveal>{e.casesIntro}</p>
+        </div>
+        {cases.length === 0 ? (
+          <p>{t.casesEmpty}</p>
+        ) : (
+          <div class="ed-case-list">
+            {cases.map((c, index) => (
+              <article class="ed-case-card" data-reveal>
+                <div class="ed-case-card__meta">
+                  <div>0{index + 1} / {e.caseType}</div>
+                  <div>{c.category} · {t.criticality}: {c.criticality}</div>
+                  <div>{c.readingMinutes} {t.minRead}</div>
+                </div>
+                <div>
+                  <h3><a href={`/cases/${c.slug}/`}>{c.title}</a></h3>
+                  <p>{c.summary}</p>
+                  <ul>{c.stack.map((stack) => <li>{stack}</li>)}</ul>
+                </div>
+                <span class="ed-case-card__arrow" aria-hidden="true">↗</span>
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+
+    <section class="ed-outro" aria-labelledby="ed-outro-heading">
+      <div class="ed-container ed-outro__inside">
+        <div>
+          <span class="ed-section__eyebrow">{e.outroEyebrow}</span>
+          <h2 id="ed-outro-heading">{e.outroTitle}<br/><em>{e.outroAccent}</em></h2>
+        </div>
+        <a class="ed-cta ed-cta--primary" href="https://hefesto-studio.cl/"
+          target="_blank" rel="noopener noreferrer">
+          {e.outroCta}<span aria-hidden="true">↗</span>
+        </a>
+      </div>
     </section>
   </main>
-  <footer class="border-t border-slate-800/80 py-8 text-center font-mono text-xs text-slate-400">
-    <p>© {new Date().getFullYear()} César Bugueño · {t.footer}</p>
+
+  <footer class="ed-footer">
+    <div class="ed-container ed-footer__inner">
+      <p>© {new Date().getFullYear()} César Bugueño · {e.footerLine}</p>
+      <div class="flex flex-wrap items-center gap-6">
+        <a href={SITE.github} rel="me noopener noreferrer" target="_blank">GitHub ↗</a>
+        <a href="https://hefesto-studio.cl/" target="_blank" rel="noopener noreferrer">Hefesto Studio ↗</a>
+        <a href="#main">{e.backToTop} ↑</a>
+      </div>
+    </div>
   </footer>
 </BaseLayout>
+
 <script>
   import { mountMotion } from '../lib/motion';
   let cleanup: (() => void) | undefined;
-  const query = matchMedia('(prefers-reduced-motion: reduce)');
+  const media = matchMedia('(prefers-reduced-motion: reduce)');
   const start = () => {
     cleanup?.();
-    cleanup = query.matches ? undefined : mountMotion();
+    cleanup = undefined;
+    if (media.matches || document.documentElement.classList.contains('motion-paused')) return;
+    cleanup = mountMotion();
   };
-  const onPreferenceChange = () => start();
   const dispose = () => {
     cleanup?.();
-    query.removeEventListener('change', onPreferenceChange);
+    media.removeEventListener('change', start);
+    removeEventListener('portfolio-motion-change', start);
     removeEventListener('pagehide', dispose);
   };
   if (document.readyState === 'loading') {
@@ -108,6 +266,7 @@ const accent = {
   } else {
     start();
   }
-  query.addEventListener('change', onPreferenceChange);
+  media.addEventListener('change', start);
+  addEventListener('portfolio-motion-change', start);
   addEventListener('pagehide', dispose);
 </script>
