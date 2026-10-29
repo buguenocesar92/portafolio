@@ -1,5 +1,6 @@
 ---
 import '../styles/dossier.css';
+import '../styles/dossier-green.css';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { dossier, type DossierLang } from '../data/dossier';
 import { getCasesByLang } from '../lib/cms';
@@ -7,6 +8,12 @@ interface Props { lang: DossierLang }
 const {lang}=Astro.props;
 const d=dossier[lang];
 const archive=await getCasesByLang(lang);
+const filters = lang === 'es'
+  ? [{id:'all',label:'Todos'},{id:'platform',label:'Plataformas'},{id:'security',label:'Seguridad'},{id:'infra',label:'Infraestructura'}]
+  : [{id:'all',label:'All'},{id:'platform',label:'Platforms'},{id:'security',label:'Security'},{id:'infra',label:'Infrastructure'}];
+const categoryOf = (id:string) => (id === 'recovery' || id === 'privacy') ? 'security'
+  : id === 'platform' ? 'infra' : 'platform';
+const counts: Record<string,number> = {all:d.projects.length,platform:2,security:2,infra:1};
 ---
 <BaseLayout {lang} title={d.title} description={d.description} bodyClass="dossier-page" alternates={{es:'/',en:'/en/'}}>
   <div class="dossier">
@@ -20,6 +27,15 @@ const archive=await getCasesByLang(lang);
           <a href="#work">{d.nav.work}</a><a href="#principles">{d.nav.principles}</a><a href="#experience">{d.nav.experience}</a><a href="#contact">{d.nav.contact}</a>
         </nav>
         <a class="d-language" href={lang==='es'?'/en/':'/'} hreflang={lang==='es'?'en':'es'}>{d.nav.toggle} ↗</a>
+        <details class="d-mobile-nav">
+          <summary aria-label={lang==='es'?'Abrir menú de navegación':'Open navigation menu'}>
+            <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+          </summary>
+          <nav aria-label={d.nav.intro}>
+            <a href="#work">{d.nav.work}</a><a href="#principles">{d.nav.principles}</a>
+            <a href="#experience">{d.nav.experience}</a><a href="#contact">{d.nav.contact}</a>
+          </nav>
+        </details>
       </div>
     </header>
     <main id="main">
@@ -59,9 +75,18 @@ const archive=await getCasesByLang(lang);
           <div class="d-section__head" data-reveal>
             <p class="d-label">{d.indexLabel}</p><h2 id="d-work-heading">{d.workTitle}</h2><p>{d.workDescription}</p>
           </div>
+          <div class="d-filters" data-project-filters hidden role="group" aria-label={lang==='es'?'Filtrar proyectos':'Filter projects'}>
+            <span class="d-filters__legend">{lang==='es'?'FILTRAR POR':'FILTER BY'}</span>
+            <div class="d-filters__controls">
+              {filters.map((filter,index)=><button type="button" data-filter={filter.id} aria-pressed={index===0}>
+                {filter.label} <span>({counts[filter.id]})</span>
+              </button>)}
+            </div>
+            <span class="d-filters__count" aria-live="polite">{d.projects.length} / {d.projects.length}</span>
+          </div>
           <div class="d-projects">
             {d.projects.map(project=>
-              <article class:list={['d-project',project.emphasis&&'d-project--feature']} id={project.id}>
+              <article class:list={['d-project',project.emphasis&&'d-project--feature']} id={project.id} data-project-category={categoryOf(project.id)}>
                 <div class="d-project__heading" data-reveal>
                   <div class="d-project__meta"><span>{project.number} / 05</span><span>{project.kicker}</span><span>{project.year}</span></div>
                   <div class="d-project__body">
@@ -126,6 +151,24 @@ const archive=await getCasesByLang(lang);
 <script>
   import {mountMotion} from '../lib/motion';
   let cleanup:(()=>void)|undefined;
+  const filters = document.querySelector<HTMLElement>('[data-project-filters]');
+  if(filters) {
+    filters.hidden=false;
+    const buttons=Array.from(filters.querySelectorAll<HTMLButtonElement>('button[data-filter]'));
+    const cards=Array.from(document.querySelectorAll<HTMLElement>('.d-project[data-project-category]'));
+    const status=filters.querySelector<HTMLElement>('.d-filters__count');
+    const update=(current:string)=>{
+      buttons.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.filter===current)));
+      let visible=0;
+      cards.forEach(card=>{
+        const selected=current==='all'||card.dataset.projectCategory===current;
+        card.hidden=!selected;
+        if(selected) visible++;
+      });
+      if(status) status.textContent=`${visible} / ${cards.length}`;
+    };
+    buttons.forEach(button=>button.addEventListener('click',()=>update(button.dataset.filter??'all')));
+  }
   const start=()=>{cleanup?.();cleanup=mountMotion();};
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start,{once:true});
   else start();
