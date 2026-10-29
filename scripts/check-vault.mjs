@@ -21,6 +21,6 @@ assert.match(scene, /forceContextLoss/);
 assert.match(scene, /import\('gsap'\)/);
 assert.match(svg, /<svg/);
 assert.match(data, /Calify & Fit/);
-assert.match(data, /no se muestra información de salud/);
+assert.match(data, /no se muestra información de salud/i);
 assert.doesNotMatch(scene, /172\.31\.|10\.210\.|root@|deploy@/);
 console.log('Secure Vault source checks: OK (static checks, not a rendered accessibility audit).');

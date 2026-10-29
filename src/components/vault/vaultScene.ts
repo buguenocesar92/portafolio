@@ -199,7 +199,6 @@ export function createVaultScene(
     orbitRings.forEach(({ mesh, speed }, index) => {
       mesh.rotation.z += speed * dt * (1 + impulse * 1.2);
       mesh.rotation.y += speed * dt * .4;
-      mesh.material;
       if (index === 0) mesh.scale.setScalar(1 + Math.sin(elapsed * .8) * .006);
     });
     satellites.forEach((mesh, id) => {
