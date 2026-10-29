@@ -1,0 +1,5 @@
+---
+interface Props { id?: string; as?: 'h1' | 'h2' | 'h3'; class?: string; text: string }
+const { as: Tag = 'h2', id, class: className = '', text } = Astro.props;
+---
+<Tag {id} data-scramble class={className}>{text}</Tag>

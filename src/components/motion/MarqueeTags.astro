@@ -1,0 +1,9 @@
+---
+interface Props { tags: readonly string[]; label: string }
+const { tags, label } = Astro.props;
+---
+<div class="overflow-hidden border-y border-slate-800/80 py-3" role="group" aria-label={label}>
+  <ul class="flex flex-wrap justify-center gap-x-6 gap-y-2 font-mono text-[11px] tracking-wider text-slate-400">
+    {tags.map((tag) => <li class="before:mr-2 before:text-emerald-term before:content-['◇']">{tag}</li>)}
+  </ul>
+</div>

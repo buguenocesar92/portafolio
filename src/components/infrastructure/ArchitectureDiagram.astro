@@ -1,0 +1,36 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  labels: { source: string; island: string; edge: string };
+}
+const { title, description, labels } = Astro.props;
+---
+<figure class="rounded-xl border border-slate-800/80 bg-surface p-5" data-reveal>
+  <figcaption class="mb-4 font-mono text-xs text-slate-300">{title}</figcaption>
+  <svg class="w-full" viewBox="0 0 620 148" role="img" aria-label={description}>
+    <defs>
+      <linearGradient id="diagram-beam" x1="0" x2="1">
+        <stop offset="0" stop-color="#10B981" stop-opacity=".18"/>
+        <stop offset="1" stop-color="#10B981" stop-opacity=".75"/>
+      </linearGradient>
+    </defs>
+    <path class="diagram-trace" d="M154 73 H230 M380 73 H458" stroke="url(#diagram-beam)" stroke-width="2" stroke-dasharray="7 6" fill="none" />
+    <g fill="#11131C" stroke="#10B981" stroke-opacity=".8">
+      <rect x="15" y="42" width="140" height="62" rx="7"/>
+      <rect x="235" y="42" width="150" height="62" rx="7"/>
+      <rect x="465" y="42" width="140" height="62" rx="7"/>
+    </g>
+    <g fill="#D1FAE5" font-size="16" text-anchor="middle" font-family="monospace">
+      <text x="85" y="80">{labels.source}</text>
+      <text x="310" y="80">{labels.island}</text>
+      <text x="535" y="80">{labels.edge}</text>
+    </g>
+  </svg>
+  <p class="mt-3 text-sm text-slate-400">{description}</p>
+</figure>
+<style>
+  .diagram-trace { animation: signal-flow 5s linear infinite; }
+  @keyframes signal-flow { to { stroke-dashoffset: -52; } }
+  @media (prefers-reduced-motion: reduce) { .diagram-trace { animation: none; } }
+</style>
