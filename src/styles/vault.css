@@ -149,3 +149,10 @@ html.motion-paused .vault-svg-orbit { animation:none !important; }
   .vault-svg-orbit { animation:none !important; }
   .vault__fallback,.vault__canvas { transition:none; }
 }
+
+/* Without JS every system remains fully readable, not only the default selection. */
+.vault__noscript { background:#111e17; color:#d9f0df; padding:20px; border:1px solid #61846e; border-radius:8px; }
+.vault__noscript h2 { font-size:1.2rem; font-weight:700; }
+.vault__noscript h3 { font-size:1rem; font-weight:650; margin-top:15px; color:#f5c58c; }
+.vault__noscript p, .vault__noscript li { line-height:1.6; font-size:.85rem; margin-top:5px; }
+.vault__noscript ul { list-style:disc; padding-left:22px; }

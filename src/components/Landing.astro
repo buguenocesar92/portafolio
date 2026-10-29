@@ -4,6 +4,7 @@ import '../styles/vault.css';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import EditorialNav from './EditorialNav.astro';
 import SecureVault from './vault/SecureVault';
+import { VAULT_COPY } from './vault/vaultData';
 import InfrastructureExperience from './infrastructure/InfrastructureExperience';
 import ArchitectureDiagram from './infrastructure/ArchitectureDiagram.astro';
 import ScrollProgress from './motion/ScrollProgress.astro';
@@ -48,6 +49,20 @@ const technologies = Array.from(new Set(projects.flatMap((project) => project.ch
         </div>
         <div class="ed-hero__visual">
           <SecureVault client:visible lang={lang} />
+          <noscript>
+            <section class="vault__noscript" aria-label={VAULT_COPY[lang].title}>
+              <h2>{VAULT_COPY[lang].title}</h2>
+              <p>{VAULT_COPY[lang].subtitle}</p>
+              {VAULT_COPY[lang].nodeList.map((node) => (
+                <article>
+                  <h3>{node.title}</h3>
+                  <p>{node.summary}</p>
+                  <ul>{node.layers.map((step) => <li>{step}</li>)}</ul>
+                  <p>{node.verification}</p>
+                </article>
+              ))}
+            </section>
+          </noscript>
         </div>
       </section>
 
