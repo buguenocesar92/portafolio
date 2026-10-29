@@ -18,9 +18,11 @@ export default function ForgeVisual({ title, caption, hint }: Props) {
 
   useEffect(() => {
     let disposed = false;
+    let generation = 0;
     let cleanup: (() => void) | undefined;
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
     const start = () => {
+      const attempt = ++generation;
       cleanup?.();
       cleanup = undefined;
       setLive(false);
@@ -32,7 +34,7 @@ export default function ForgeVisual({ title, caption, hint }: Props) {
       }
 
       void import('./forgeScene').then(({ createForgeScene }) => {
-        if (disposed || !canvas.current || media.matches ||
+        if (disposed || attempt !== generation || !canvas.current || media.matches ||
             document.documentElement.classList.contains('motion-paused')) return;
         try {
           cleanup = createForgeScene(canvas.current);
@@ -49,6 +51,7 @@ export default function ForgeVisual({ title, caption, hint }: Props) {
     window.addEventListener('portfolio-motion-change', start);
     return () => {
       disposed = true;
+      generation++;
       cleanup?.();
       media.removeEventListener('change', start);
       window.removeEventListener('portfolio-motion-change', start);

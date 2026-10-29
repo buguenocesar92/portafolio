@@ -34,6 +34,7 @@ const buildSha = import.meta.env.PUBLIC_BUILD_SHA?.slice(0, 7) ?? 'local';
       aria-pressed="false"
       data-stop={e.pauseMotion}
       data-play={e.resumeMotion}
+      data-system-reduced={e.systemReduced}
       aria-label={e.pauseMotion}>
       <span aria-hidden="true">✳</span> <span data-motion-label>{e.pauseMotion}</span>
     </button>
@@ -44,9 +45,11 @@ const buildSha = import.meta.env.PUBLIC_BUILD_SHA?.slice(0, 7) ?? 'local';
   if (button) {
     const reduced = matchMedia('(prefers-reduced-motion: reduce)');
     const refresh = () => {
+      button.disabled = reduced.matches;
+      button.title = reduced.matches ? button.dataset.systemReduced ?? '' : '';
       const paused = document.documentElement.classList.contains('motion-paused') || reduced.matches;
       button.setAttribute('aria-pressed', paused ? 'true' : 'false');
-      button.setAttribute('aria-label', paused ? button.dataset.play ?? '' : button.dataset.stop ?? '');
+      button.setAttribute('aria-label', reduced.matches ? button.dataset.systemReduced ?? '' : paused ? button.dataset.play ?? '' : button.dataset.stop ?? '');
       const label = button.querySelector<HTMLElement>('[data-motion-label]');
       if (label) label.textContent = paused ? button.dataset.play ?? '' : button.dataset.stop ?? '';
     };

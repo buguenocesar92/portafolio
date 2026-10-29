@@ -45,7 +45,7 @@ body.portfolio-editorial :focus-visible {
 }
 .ed-brand { display: flex; align-items: center; gap: 13px; text-decoration: none; color: #161d19; flex-shrink: 0; }
 .ed-brand__monogram {
-  position: relative; display: grid; place-items: center; font-weight: 830;
+  position: relative; display: flex; align-items: center; justify-content: center; white-space: nowrap; font-weight: 830;
   line-height: 1; letter-spacing: -.10em; font-size: 1.85rem;
   width: 59px; height: 59px; border: 1px solid #232823; border-radius: 4px;
   color: #1d211e;
@@ -203,7 +203,7 @@ body.portfolio-editorial :focus-visible {
   position: absolute; left: 24px; bottom: 24px; right: 24px;
   padding: 13px 15px; border: 1px solid #b6d2bb2f; background: #111b19e8;
   color: #bed3c4; font: 500 .65rem "JetBrains Mono Variable",monospace;
-  overflow-x: auto; white-space: nowrap;
+  overflow-wrap: anywhere; white-space: normal;
 }
 .ed-feature h3 { font-size: clamp(1.7rem, 2.4vw, 2.55rem); font-weight: 710; letter-spacing: -.055em; margin-bottom: .75rem; }
 .ed-feature p, .ed-work-card p { color: #686f66; line-height: 1.7; font-size: .93rem; }
@@ -314,7 +314,9 @@ html.motion-paused *, html.motion-paused *::before, html.motion-paused *::after 
   .ed-hero__headline { font-size: clamp(2.85rem, 11vw, 4rem); }
   .ed-hero__actions { gap: .6rem; }
   .ed-cta { padding: .9rem 1.0rem; gap: .5rem; }
-  .ed-work-card { padding: 1.5rem; grid-template-columns: 1fr 28%; }
+  .ed-work-card { padding: 1.5rem; grid-template-columns: 1fr; }
+  .ed-work-card > div:first-child { position: relative; z-index: 1; }
+  .ed-work-card__graphic { position: absolute; top: 3.6rem; right: .7rem; width: 88px; opacity: .17; pointer-events: none; }
   .ed-work-card__graphic { opacity: .65; }
   .ed-work-card h3 { margin-top: 1.5rem; }
 }
