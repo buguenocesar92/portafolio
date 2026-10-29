@@ -323,3 +323,6 @@ html.motion-paused *, html.motion-paused *::before, html.motion-paused *::after 
   .ed-feature,.ed-work-card,.ed-cta,.ed-header__studio,.ed-case-card__arrow { transition: none; }
   .ed-feature:hover,.ed-work-card:hover,.ed-cta:hover,.ed-header__studio:hover { transform: none; }
 }
+
+/* Indicador de scroll cobre en la versión editorial */
+body.portfolio-editorial #scroll-progress { background: #b7472a; }
