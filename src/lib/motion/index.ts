@@ -23,11 +23,12 @@ export function mountMotion(root: Document = document): () => void {
       const element = entry.target as HTMLElement;
       void loadGsap().then((engine) => {
         if (!alive) return;
+        let effectCleanup: (() => void) | undefined;
         const context = engine.gsap.context(() => {
-          if (element.matches('[data-split-reveal]')) splitReveal(element, engine);
-          else reveal(element, engine);
+          effectCleanup = element.matches('[data-split-reveal]')
+            ? splitReveal(element, engine) : reveal(element, engine);
         }, element);
-        handlers.push(() => context.revert());
+        handlers.push(() => { effectCleanup?.(); context.revert(); });
       }).catch(() => {});
     }
   }, { rootMargin: '0px 0px -40px 0px' });

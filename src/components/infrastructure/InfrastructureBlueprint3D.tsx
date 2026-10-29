@@ -7,9 +7,10 @@ interface Props {
   title: string;
   hint: string;
   onFailure: () => void;
+  schematicLabel: string;
 }
 
-export default function InfrastructureBlueprint3D({ layers, title, hint, onFailure }: Props) {
+export default function InfrastructureBlueprint3D({ layers, title, hint, onFailure, schematicLabel }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [selected, setSelected] = useState<NodeId>('isolation');
   const current = layers.find((layer) => layer.id === selected) ?? layers[0];
@@ -40,7 +41,7 @@ export default function InfrastructureBlueprint3D({ layers, title, hint, onFailu
           className="block h-[20rem] w-full md:h-[25rem]"
         />
         <span aria-hidden="true" className="pointer-events-none absolute bottom-3 left-3 font-mono text-[10px] text-slate-500">
-          SCHEMATIC / CONCEPTUAL
+          {schematicLabel}
         </span>
       </div>
       <div className="border-t border-slate-800/80 p-4">

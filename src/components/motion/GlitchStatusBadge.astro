@@ -2,7 +2,11 @@
 interface Props { label: string; state?: 'build' | 'review' }
 const { label, state = 'build' } = Astro.props;
 ---
-<span class:list={['inline-flex items-center gap-2 rounded border px-2 py-1 font-mono text-[10px] tracking-widest uppercase', state === 'build' ? 'border-emerald-term/40 text-emerald-term' : 'border-amber-forge/40 text-amber-forge']}>
+<span class:list={['glitch-badge inline-flex items-center gap-2 rounded border px-2 py-1 font-mono text-[10px] tracking-widest uppercase', state === 'build' ? 'border-emerald-term/40 text-emerald-term' : 'border-amber-forge/40 text-amber-forge']}>
   <span class="size-1.5 rounded-full bg-current" aria-hidden="true"></span>
   <span>{label}</span>
 </span>
+<style>
+  .glitch-badge:hover { text-shadow: 1px 0 rgb(245 158 11 / .4), -1px 0 rgb(16 185 129 / .3); }
+  @media (prefers-reduced-motion: reduce) { .glitch-badge:hover { text-shadow: none; } }
+</style>

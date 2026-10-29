@@ -103,6 +103,7 @@ export function createInfrastructureScene(canvas: HTMLCanvasElement, onSelect: S
     aimY = ((event.clientY - bounds.top) / bounds.height - 0.5) * 0.2;
     canvas.style.cursor = hit(event) ? 'pointer' : 'default';
   }
+  function pointerLeave() { canvas.style.cursor = 'default'; }
   function pointerClick(event: PointerEvent) {
     const selected = hit(event);
     if (selected) onSelect(selected);
@@ -147,7 +148,7 @@ export function createInfrastructureScene(canvas: HTMLCanvasElement, onSelect: S
   intersection.observe(canvas);
   document.addEventListener('visibilitychange', setRunning);
   canvas.addEventListener('pointermove', pointerMove);
-  canvas.addEventListener('pointerleave', () => { canvas.style.cursor = 'default'; });
+  canvas.addEventListener('pointerleave', pointerLeave);
   canvas.addEventListener('pointerup', pointerClick);
   resize();
   renderer.render(scene, camera);
@@ -160,6 +161,7 @@ export function createInfrastructureScene(canvas: HTMLCanvasElement, onSelect: S
     intersection.disconnect();
     document.removeEventListener('visibilitychange', setRunning);
     canvas.removeEventListener('pointermove', pointerMove);
+    canvas.removeEventListener('pointerleave', pointerLeave);
     canvas.removeEventListener('pointerup', pointerClick);
     const geometrySet = new Set<THREE.BufferGeometry>();
     const materialSet = new Set<THREE.Material>();
