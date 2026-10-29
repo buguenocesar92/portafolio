@@ -123,39 +123,6 @@ body.portfolio-editorial :focus-visible {
 .ed-hero__foot > span:first-child { width: 45px; height: 1px; background: var(--ed-accent); }
 .ed-hero__visual { position: relative; min-height: 560px; align-self: stretch; display: grid; align-items: center; }
 
-.forge-art { position: relative; margin: auto; width: min(100%, 690px); aspect-ratio: 1; isolation: isolate; }
-.forge-art__matrix {
-  position: absolute; inset: 3%; z-index: -2;
-  background-image: radial-gradient(#7c85713b .8px, transparent .8px);
-  background-size: 23px 23px; mask-image: radial-gradient(ellipse, #000 10%, transparent 74%);
-}
-.forge-art__halo {
-  position: absolute; inset: 16%; border-radius: 50%; z-index: -2;
-  background: radial-gradient(circle, #b84c2924, #db95600b 40%, transparent 70%);
-  filter: blur(30px); transform: scale(1.25);
-}
-.forge-art__fallback, .forge-art__canvas {
-  position: absolute; inset: 0; width: 100%; height: 100%;
-  transition: opacity .7s ease;
-  object-fit: contain;
-}
-.forge-art__fallback { animation: ed-sculpture-float 9s ease-in-out infinite alternate; }
-.forge-art.is-live3d .forge-art__fallback { opacity: .10; }
-.forge-art__canvas { pointer-events: auto; display: block; }
-.forge-art__axis {
-  position: absolute; font: 500 .61rem "JetBrains Mono Variable",monospace;
-  letter-spacing: .15em; color: #b95835;
-}
-.forge-art__axis--top { left: 14%; top: 11%; }
-.forge-art__axis--side { right: 3%; top: 41%; writing-mode: vertical-rl; }
-.forge-art__caption {
-  position: absolute; left: 13%; bottom: 7%; padding: 7px 12px;
-  border-left: 2px solid var(--ed-accent); color: #706f64;
-  font-size: .67rem; letter-spacing: .1em; text-transform: uppercase;
-  font-family: "JetBrains Mono Variable",monospace;
-}
-@keyframes ed-sculpture-float { from { transform: translateY(-6px) rotate(-2deg); } to { transform: translateY(9px) rotate(2deg); } }
-
 .ed-rail {
   border-top: 1px solid var(--ed-line); border-bottom: 1px solid var(--ed-line);
   min-height: 76px; display: grid; grid-template-columns: 210px minmax(0,1fr);
@@ -321,7 +288,6 @@ html.motion-paused *, html.motion-paused *::before, html.motion-paused *::after 
   .ed-work-card h3 { margin-top: 1.5rem; }
 }
 @media(prefers-reduced-motion:reduce) {
-  .forge-art__fallback { animation: none; }
   .ed-feature,.ed-work-card,.ed-cta,.ed-header__studio,.ed-case-card__arrow { transition: none; }
   .ed-feature:hover,.ed-work-card:hover,.ed-cta:hover,.ed-header__studio:hover { transform: none; }
 }

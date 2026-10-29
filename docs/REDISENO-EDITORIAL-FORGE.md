@@ -1,31 +1,34 @@
-# Rediseño visual: editorial forge
+# Portafolio editorial · Hefesto Secure Vault
 
-Referencia visual: sitio público de Hefesto Studio, revisado el 29-10-2026.
-**No** es un traslado del sitio corporativo ni una copia de su figura de marca.
-El portafolio mantiene una identidad personal propia.
+Referente de composición: Hefesto Studio. El portafolio conserva nombre e
+identidad propios: monograma C.B, tipografía editorial y color cobre.
 
-## Diferencia con la Fase 2 anterior
+## Hero
 
-Antes: fondo oscuro uniforme, tarjetas genéricas y Three.js oculto tras el
-hero. Ahora: lenguaje editorial claro, tipografía protagonista en dos columnas,
-escultura procedural en el primer viewport, productos con composiciones
-diferentes y arquitectura en un bloque oscuro de alto contraste.
+La escultura geométrica inicial ha sido reemplazada por **Hefesto Secure Vault**:
+núcleo de módulos aislados, tres escudos orbitales y cuatro nodos de proyectos.
+Paleta del contenedor: grafito, esmeralda y ámbar, en contraste con el
+marfil/cobre editorial.
 
-## Escultura y fallback
+El visitante puede seleccionar cada proyecto. Con WebGL compatible, Three.js
+muestra la escena y GSAP desplaza suavemente la cámara; con WebGL ausente,
+hardware limitado o reducción de movimiento se conserva el SVG SSR, la
+navegación por teclado y el panel textual. Sin JavaScript existe una lista
+completa de los cuatro proyectos.
 
-- `ForgeVisual` entrega un SVG elaborado en SSR para todos los usuarios.
-- En WebGL compatible se importa `forgeScene.ts` de forma dinámica.
-- Sin red de assets, sin modelos descargados ni información real de la red.
-- `prefers-reduced-motion`, ahorro de datos y dispositivos modestos muestran
-  el SVG. El botón de movimiento deshabilita las escenas y GSAP.
-- Se detiene render al ocultarse la pestaña o salir del viewport. Se liberan
-  geometrías, materiales y contexto al desmontar.
+## Límite de información
 
-## Evidencia y revisión
+La escena no corresponde a topología, direcciones, puertos, hostnames ni
+telemetría reales. Los detalles de Calify & Fit están identificados como
+arquitectura objetivo, sin registros de salud o nutrición sincronizados.
+Las métricas solo se publicarán después de disponer de evidencia verificable.
 
-PR de diseño en modo draft. No fusionar antes de revisar el artefacto
-`portfolio-editorial-preview` de la Action de capturas, en desktop ES/EN y
-móvil ES. La captura no sustituye una revisión humana ni una auditoría WCAG.
-Lighthouse y Astro check quedan pendientes de verificación adicional.
+## Pruebas
 
-No existen credenciales nuevas, datos médicos, métricas ni promesas no medidas.
+- Quality: `npm ci`, checks estáticos, `astro build`, escaneo de secretos.
+- Visual Preview: Chromium ES/EN desktop y ES móvil.
+- Chromium E2E: navegación entre nodos, teclado, cambio ES/EN,
+  `prefers-reduced-motion` y contenido sin JavaScript.
+- Por validar aparte: animación WebGL con GPU y presupuesto Lighthouse.
+
+La rama es de revisión. La fusión y cualquier despliegue requieren aprobación.
