@@ -1,0 +1,40 @@
+---
+import '../styles/global.css';
+import SEO from '../components/SEO.astro';
+import { ui, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang?: Lang;
+  title?: string;
+  description?: string;
+  type?: 'website' | 'article';
+  alternates?: Partial<Record<Lang, string>>;
+  publishedAt?: string;
+}
+
+const { lang = 'es', type, alternates, publishedAt } = Astro.props;
+const t = ui[lang];
+const title = Astro.props.title ?? t.title;
+const description = Astro.props.description ?? t.description;
+---
+
+<!doctype html>
+<html lang={t.htmlLang} class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <SEO {title} {description} {lang} {type} {alternates} {publishedAt} />
+  </head>
+  <body class="bg-background text-foreground min-h-screen font-sans antialiased">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:bg-primary focus:px-3 focus:py-2 focus:text-primary-foreground"
+      >Skip to content</a
+    >
+    <slot />
+  </body>
+</html>

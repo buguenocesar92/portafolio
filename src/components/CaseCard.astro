@@ -1,0 +1,35 @@
+---
+import type { CaseStudy } from '../lib/cms';
+import { ui, type Lang } from '../i18n/ui';
+
+interface Props { case: CaseStudy; lang: Lang }
+const { case: c, lang } = Astro.props;
+const t = ui[lang];
+const crit = {
+  low: 'text-slate-400 border-slate-700',
+  medium: 'text-emerald-term border-emerald-term/40',
+  high: 'text-amber-forge border-amber-forge/40',
+  critical: 'text-red-400 border-red-400/40',
+} as const;
+---
+
+<article class="group flex flex-col rounded-xl border border-slate-800/80 bg-surface p-6 transition hover:border-slate-600">
+  <div class="flex flex-wrap items-center gap-2 font-mono text-[11px]">
+    <span class="rounded border border-slate-700 px-2 py-0.5 text-slate-300">{c.category}</span>
+    <span class:list={['rounded border px-2 py-0.5 uppercase', crit[c.criticality]]}>{t.criticality}: {c.criticality}</span>
+    <span class="ml-auto text-slate-500">{c.readingMinutes} {t.minRead}</span>
+  </div>
+  <h3 class="mt-4 text-lg font-semibold text-slate-100">
+    <a href={`/cases/${c.slug}/`} class="after:absolute after:inset-0 focus-visible:outline-none">{c.title}</a>
+  </h3>
+  <p class="mt-2 flex-1 text-sm leading-relaxed text-slate-400">{c.summary}</p>
+  <ul class="mt-4 flex flex-wrap gap-2">
+    {c.stack.map((s) => <li class="rounded border border-slate-800/80 bg-obsidian px-2 py-0.5 font-mono text-[11px] text-slate-300">{s}</li>)}
+  </ul>
+  <span class="mt-5 font-mono text-xs text-emerald-term">{t.readMore} →</span>
+</article>
+
+<style>
+  article { position: relative; }
+  article:focus-within { outline: 2px solid #10b981; outline-offset: 2px; }
+</style>

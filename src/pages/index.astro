@@ -1,18 +1,5 @@
 ---
-import Hero from '../components/Hero';
-import '../styles/global.css';
+import Landing from '../components/Landing.astro';
 ---
 
-<html lang="es" class="dark">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
-    <title>César Bugueño | Portafolio</title>
-  </head>
-  <body class="bg-background text-foreground min-h-screen grid place-items-center p-4">
-    <Hero client:load />
-  </body>
-</html>
+<Landing lang="es" />

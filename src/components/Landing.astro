@@ -1,0 +1,89 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import StatusBar from './StatusBar.astro';
+import InfrastructureBlueprint from './InfrastructureBlueprint';
+import CaseCard from './CaseCard.astro';
+import { ui, blueprint, showcase, type Lang } from '../i18n/ui';
+import { getCasesByLang } from '../lib/cms';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = ui[lang];
+const cases = await getCasesByLang(lang);
+const accent = {
+  amber: 'border-amber-forge/40 text-amber-forge',
+  emerald: 'border-emerald-term/40 text-emerald-term',
+} as const;
+---
+
+<BaseLayout lang={lang} alternates={{ es: '/', en: '/en/' }}>
+  <StatusBar lang={lang} />
+
+  <main id="main" class="mx-auto max-w-6xl px-4">
+    <!-- HERO -->
+    <section class="py-20 sm:py-28" aria-labelledby="hero-title">
+      <p class="inline-block max-w-full overflow-x-auto rounded-md border border-slate-800/80 bg-surface px-3 py-1.5 font-mono text-xs whitespace-nowrap text-slate-300">
+        <span class="text-emerald-term">$</span> ./scaffold new <span class="text-amber-forge">"Platform_Engineering"</span> --shared=hefesto --security=strict
+      </p>
+      <h1 id="hero-title" class="mt-6 max-w-4xl text-4xl leading-tight font-bold tracking-tight text-slate-50 sm:text-5xl">
+        {t.h1}
+      </h1>
+      <p class="mt-6 max-w-3xl text-base leading-relaxed text-slate-400 sm:text-lg">{t.subtitle}</p>
+      <div class="mt-9 flex flex-wrap gap-3">
+        <a href="#hefesto" class="rounded-lg bg-primary px-5 py-2.5 font-mono text-sm font-semibold text-primary-foreground transition hover:brightness-110 focus-visible:ring-2 focus-visible:ring-emerald-term focus-visible:ring-offset-2 focus-visible:ring-offset-obsidian focus-visible:outline-none">
+          [{t.ctaPrimary}]
+        </a>
+        <a href="#cases" class="rounded-lg border border-slate-700 px-5 py-2.5 font-mono text-sm text-slate-200 transition hover:border-amber-forge hover:text-amber-forge focus-visible:ring-2 focus-visible:ring-amber-forge focus-visible:outline-none">
+          [{t.ctaSecondary}]
+        </a>
+      </div>
+    </section>
+
+    <!-- BLUEPRINT (isla React) -->
+    <section id="hefesto" class="scroll-mt-16 pb-20" aria-labelledby="blueprint-title">
+      <h2 id="blueprint-title" class="mb-6 font-mono text-sm tracking-widest text-emerald-term uppercase">
+        // {t.blueprintTitle}
+      </h2>
+      <InfrastructureBlueprint client:visible layers={blueprint[lang]} title={t.blueprintTitle} hint={t.blueprintHint} />
+    </section>
+
+    <!-- BENTO -->
+    <section class="pb-20" aria-labelledby="showcase-title">
+      <h2 id="showcase-title" class="mb-6 font-mono text-sm tracking-widest text-amber-forge uppercase">
+        // {t.showcaseTitle}
+      </h2>
+      <div class="grid gap-4 md:grid-cols-2">
+        {showcase[lang].map((s) => (
+          <article class:list={['rounded-xl border border-slate-800/80 bg-surface p-6 transition hover:border-slate-600', s.wide && 'md:col-span-2']}>
+            <p class:list={['inline-block rounded border px-2 py-0.5 font-mono text-xs', accent[s.accent]]}>{s.tag}</p>
+            <h3 class="mt-4 text-xl font-semibold text-slate-100">{s.title}</h3>
+            <p class="mt-3 max-w-3xl text-sm leading-relaxed text-slate-400">{s.body}</p>
+            <ul class="mt-5 flex flex-wrap gap-2">
+              {s.chips.map((c) => (
+                <li class="rounded border border-slate-800/80 bg-obsidian px-2 py-1 font-mono text-[11px] text-slate-300">{c}</li>
+              ))}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- CASES -->
+    <section id="cases" class="scroll-mt-16 pb-24" aria-labelledby="cases-title">
+      <h2 id="cases-title" class="mb-6 font-mono text-sm tracking-widest text-emerald-term uppercase">
+        // {t.casesTitle}
+      </h2>
+      {cases.length === 0 ? (
+        <p class="font-mono text-sm text-slate-500">{t.casesEmpty}</p>
+      ) : (
+        <div class="grid gap-4 md:grid-cols-2">
+          {cases.map((c) => <CaseCard case={c} lang={lang} />)}
+        </div>
+      )}
+    </section>
+  </main>
+
+  <footer class="border-t border-slate-800/80 py-8 text-center font-mono text-xs text-slate-500">
+    <p>© {new Date().getFullYear()} César Bugueño · {t.footer}</p>
+  </footer>
+</BaseLayout>

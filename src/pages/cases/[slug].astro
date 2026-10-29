@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCases, type CaseStudy } from '../../lib/cms';
+import { ui } from '../../i18n/ui';
+
+export async function getStaticPaths() {
+  const cases = await getCases();
+  return cases.map((c) => ({ params: { slug: c.slug }, props: { c } }));
+}
+
+interface Props { c: CaseStudy }
+const { c } = Astro.props;
+const t = ui[c.lang];
+const Content = c.Content;
+---
+
+<BaseLayout
+  lang={c.lang}
+  title={`${c.title} | César Bugueño`}
+  description={c.summary}
+  type="article"
+  publishedAt={c.publishedAt}
+>
+  <main id="main" class="mx-auto max-w-3xl px-4 py-16">
+    <a href={t.homeHref + '#cases'} class="font-mono text-xs text-emerald-term hover:underline">{t.back}</a>
+    <p class="mt-8 font-mono text-xs text-slate-500">
+      {c.category} · {t.criticality}: {c.criticality} · {c.readingMinutes} {t.minRead}
+    </p>
+    <h1 class="mt-3 text-3xl font-bold tracking-tight text-slate-50">{c.title}</h1>
+    <p class="mt-4 text-slate-400">{c.summary}</p>
+    <ul class="mt-4 flex flex-wrap gap-2">
+      {c.stack.map((s) => <li class="rounded border border-slate-800/80 bg-surface px-2 py-0.5 font-mono text-[11px] text-slate-300">{s}</li>)}
+    </ul>
+    <article class="case-body mt-10">
+      {Content ? <Content /> : <Fragment set:html={c.html ?? ''} />}
+    </article>
+  </main>
+</BaseLayout>
+
+<style is:global>
+  .case-body { color: #cbd5e1; line-height: 1.75; }
+  .case-body h2 { margin: 2rem 0 .75rem; font-size: 1.25rem; font-weight: 600; color: #f1f5f9; }
+  .case-body p, .case-body ul, .case-body ol { margin: 0 0 1rem; }
+  .case-body ul { list-style: disc; padding-left: 1.25rem; }
+  .case-body code { font-family: var(--font-mono); font-size: .85em; background: #11131c; border: 1px solid rgb(30 41 59 / .8); border-radius: 4px; padding: .1em .35em; color: #10b981; }
+  .case-body pre { background: #11131c; border: 1px solid rgb(30 41 59 / .8); border-radius: 8px; padding: 1rem; overflow-x: auto; margin: 0 0 1rem; }
+  .case-body pre code { background: none; border: 0; padding: 0; color: inherit; }
+</style>
