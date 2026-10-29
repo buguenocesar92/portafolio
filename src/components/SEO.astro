@@ -46,7 +46,7 @@ const jsonLd =
         name: SITE.name,
         url: SITE.url,
         jobTitle: 'Senior Platform Engineer & DevSecOps Specialist',
-        sameAs: [SITE.github, SITE.linkedin],
+        sameAs: SITE.linkedin ? [SITE.github, SITE.linkedin] : [SITE.github],
       };
 ---
 
