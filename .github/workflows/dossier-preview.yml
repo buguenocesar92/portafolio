@@ -1,0 +1,54 @@
+name: Editorial Portfolio — Visual and Browser Review
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'scripts/**'
+      - 'package*.json'
+      - '.github/workflows/dossier-preview.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: node scripts/check-dossier.mjs
+      - run: npm run build
+      - name: Install browser
+        run: npx --yes playwright@1.56.1 install chromium --with-deps
+      - name: Start private local preview (not deployed)
+        shell: bash
+        run: |
+          mkdir -p previews
+          nohup npm run preview -- --host 127.0.0.1 > /tmp/astro-preview.log 2>&1 &
+          for i in $(seq 1 35); do
+            if curl -fsS http://127.0.0.1:4321/ > /dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/astro-preview.log
+          exit 1
+      - name: Browser test runtime
+        run: npm install --no-save --package-lock=false playwright@1.56.1
+      - name: Check navigation, case details and mobile overflow
+        run: node scripts/verify-dossier-browser.mjs
+      - name: Generate visual review artifacts
+        run: |
+          npx --yes playwright@1.56.1 screenshot --browser chromium --full-page --viewport-size="1440,900" --wait-for-timeout 1300 http://127.0.0.1:4321/ previews/desktop-es.png
+          npx --yes playwright@1.56.1 screenshot --browser chromium --full-page --viewport-size="1440,900" --wait-for-timeout 1300 http://127.0.0.1:4321/en/ previews/desktop-en.png
+          npx --yes playwright@1.56.1 screenshot --browser chromium --full-page --viewport-size="390,844" --wait-for-timeout 1300 http://127.0.0.1:4321/ previews/mobile-es.png
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: engineering-dossier-preview
+          path: previews/
+          if-no-files-found: warn
+          retention-days: 14
