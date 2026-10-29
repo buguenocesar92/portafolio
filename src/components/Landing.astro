@@ -91,9 +91,23 @@ const accent = {
 </BaseLayout>
 <script>
   import { mountMotion } from '../lib/motion';
+  let cleanup: (() => void) | undefined;
+  const query = matchMedia('(prefers-reduced-motion: reduce)');
+  const start = () => {
+    cleanup?.();
+    cleanup = query.matches ? undefined : mountMotion();
+  };
+  const onPreferenceChange = () => start();
+  const dispose = () => {
+    cleanup?.();
+    query.removeEventListener('change', onPreferenceChange);
+    removeEventListener('pagehide', dispose);
+  };
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => mountMotion(), { once: true });
+    document.addEventListener('DOMContentLoaded', start, { once: true });
   } else {
-    mountMotion();
+    start();
   }
+  query.addEventListener('change', onPreferenceChange);
+  addEventListener('pagehide', dispose);
 </script>
