@@ -10,6 +10,15 @@ try {
   await page.getByRole('heading',{level:1}).waitFor();
   assert.match(await page.getByRole('heading',{level:1}).innerText(),/CONSTRUYO/);
   assert.equal(await page.locator('article.d-project').count(),5);
+  assert.equal(await page.locator('.d-filters').isVisible(),true,'Enhanced filters visible with JS');
+  await page.locator('button[data-filter="security"]').click();
+  assert.equal(await page.locator('article.d-project:visible').count(),2,'Security should filter two entries');
+  await page.locator('button[data-filter="infra"]').click();
+  assert.equal(await page.locator('article.d-project:visible').count(),1,'Infrastructure should filter one entry');
+  await page.locator('button[data-filter="all"]').click();
+  assert.equal(await page.locator('article.d-project:visible').count(),5,'All restores five entries');
+  const theme=await page.locator('.dossier-page').evaluate(el=>getComputedStyle(el).backgroundColor);
+  assert.equal(theme,'rgb(7, 17, 14)','The portfolio is dark green, not copper');
   await page.locator('.d-project__details summary').first().click();
   assert.equal(await page.locator('.d-project__details').first().evaluate(el=>el.open),true);
   await page.locator('a.d-language').click();
@@ -24,6 +33,11 @@ try {
   const metrics=await small.evaluate(()=>({innerWidth,scrollWidth:document.documentElement.scrollWidth}));
   assert.ok(metrics.scrollWidth <= metrics.innerWidth+2,'Horizontal overflow: '+JSON.stringify(metrics));
   assert.equal(await small.locator('article.d-project').count(),5);
+  const mobileNav=small.locator('.d-mobile-nav');
+  assert.equal(await mobileNav.isVisible(),true,'Mobile navigation should be available');
+  await mobileNav.locator('summary').click();
+  assert.equal(await mobileNav.evaluate(el=>el.open),true,'Mobile menu opens without JS');
+  assert.ok(await mobileNav.getByRole('link',{name:'Contacto'}).isVisible());
   await small.getByText('Ver decisiones de ingeniería').first().click();
   assert.equal(await small.locator('.d-project__details').first().evaluate(el=>el.open),true);
 
@@ -31,6 +45,9 @@ try {
   const noJs=await disabled.newPage();
   await noJs.goto('http://127.0.0.1:4321/',{waitUntil:'domcontentloaded'});
   assert.equal(await noJs.locator('article.d-project').count(),5);
+  assert.equal(await noJs.locator('.d-filters').isVisible(),false,'No-JS filters should not hide content');
+  await noJs.locator('.d-mobile-nav summary').click();
+  assert.equal(await noJs.locator('.d-mobile-nav').evaluate(el=>el.open),true,'Mobile menu native without JS');
   await noJs.locator('.d-project__details summary').first().click();
   assert.equal(await noJs.locator('.d-project__details').first().evaluate(el=>el.open),true);
   await context.close();await mobile.close();await disabled.close();
