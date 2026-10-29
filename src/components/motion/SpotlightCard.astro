@@ -1,0 +1,31 @@
+---
+interface Props {
+  class?: string;
+  label?: string;
+  accent?: 'emerald' | 'amber';
+}
+const { class: className = '', label, accent = 'emerald' } = Astro.props;
+---
+<article
+  data-spotlight
+  aria-label={label}
+  class:list={['spotlight-card group relative isolate overflow-hidden rounded-xl border border-slate-800/80 bg-surface p-6 transition-colors hover:border-slate-600 focus-within:border-emerald-term', className]}
+  data-accent={accent}
+>
+  <div class="spotlight-card__glow pointer-events-none absolute inset-0 -z-10" aria-hidden="true"></div>
+  <slot />
+</article>
+<style>
+  .spotlight-card__glow {
+    opacity: 0;
+    background: radial-gradient(330px circle at var(--spot-x, -900px) var(--spot-y, -900px), rgb(16 185 129 / .12), transparent 72%);
+    transition: opacity .25s;
+  }
+  [data-accent="amber"] .spotlight-card__glow {
+    background: radial-gradient(330px circle at var(--spot-x, -900px) var(--spot-y, -900px), rgb(245 158 11 / .12), transparent 72%);
+  }
+  .spotlight-card:hover .spotlight-card__glow { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) {
+    .spotlight-card__glow { display: none; }
+  }
+</style>

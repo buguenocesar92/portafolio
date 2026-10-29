@@ -1,0 +1,35 @@
+---
+interface Props { command: string; prompt?: string; class?: string }
+const { command, prompt = '$', class: className = '' } = Astro.props;
+---
+<p class:list={['inline-flex max-w-full items-center gap-2 overflow-x-auto rounded-md border border-slate-800/80 bg-surface px-3 py-1.5 font-mono text-xs text-slate-300',className]}>
+  <span class="text-emerald-term" aria-hidden="true">{prompt}</span>
+  <span data-terminal-typer data-command={command}>{command}</span>
+  <span class="terminal-cursor text-emerald-term" aria-hidden="true">▍</span>
+</p>
+<script>
+  const query = window.matchMedia('(prefers-reduced-motion: reduce)');
+  for (const target of document.querySelectorAll<HTMLElement>('[data-terminal-typer]')) {
+    if (target.dataset.started === '1' || query.matches) continue;
+    target.dataset.started = '1';
+    const full = target.dataset.command ?? '';
+    target.setAttribute('aria-label', full);
+    target.textContent = '';
+    let at = 0;
+    let timeout: number;
+    const step = () => {
+      at = Math.min(full.length, at + 2);
+      target.textContent = full.slice(0, at);
+      if (at < full.length) timeout = window.setTimeout(step, 32);
+    };
+    timeout = window.setTimeout(step, 180);
+    const finish = () => { window.clearTimeout(timeout); target.textContent = full; };
+    query.addEventListener('change', finish, { once: true });
+    window.addEventListener('pagehide', finish, { once: true });
+  }
+</script>
+<style>
+  .terminal-cursor { animation: cursor-blink 1s steps(2, start) infinite; }
+  @keyframes cursor-blink { to { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .terminal-cursor { animation: none; } }
+</style>

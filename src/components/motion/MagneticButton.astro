@@ -1,0 +1,9 @@
+---
+interface Props { href: string; class?: string; variant?: 'primary' | 'secondary' }
+const { href, class: className = '', variant = 'primary' } = Astro.props;
+const base = 'inline-flex items-center justify-center rounded-lg px-5 py-2.5 font-mono text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-obsidian';
+const styles = variant === 'primary'
+  ? 'bg-primary text-primary-foreground hover:brightness-110 focus-visible:ring-emerald-term'
+  : 'border border-slate-700 text-slate-200 hover:border-amber-forge hover:text-amber-forge focus-visible:ring-amber-forge';
+---
+<a {href} data-magnetic class:list={[base,styles,className]}><slot /></a>

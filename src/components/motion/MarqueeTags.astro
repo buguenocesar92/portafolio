@@ -1,0 +1,24 @@
+---
+interface Props { tags: readonly string[]; label: string }
+const { tags, label } = Astro.props;
+---
+<div class="marquee relative overflow-hidden border-y border-slate-800/80 py-3" role="group" aria-label={label}>
+  <ul class="sr-only">{tags.map((tag) => <li>{tag}</li>)}</ul>
+  <div class="marquee-track flex w-max gap-6" aria-hidden="true">
+    {Array.from({ length: 2 }, (_, i) => (
+      <ul class="flex shrink-0 items-center gap-6 font-mono text-[11px] tracking-wider text-slate-400" data-copy={i}>
+        {tags.map((tag) => <li class="whitespace-nowrap before:mr-2 before:text-emerald-term before:content-['◇']">{tag}</li>)}
+      </ul>
+    ))}
+  </div>
+</div>
+<style>
+  .marquee-track { animation: conveyor 38s linear infinite; }
+  .marquee:hover .marquee-track { animation-play-state: paused; }
+  @keyframes conveyor { to { transform: translateX(calc(-50% - .75rem)); } }
+  @media (prefers-reduced-motion: reduce) {
+    .marquee { overflow: auto; }
+    .marquee-track { animation: none; }
+    .marquee-track ul[data-copy="1"] { display: none; }
+  }
+</style>

@@ -2,8 +2,10 @@ export const SITE = {
   name: 'César Bugueño',
   url: 'https://cesarbugueno.dev',
   github: 'https://github.com/buguenocesar92',
-  // TODO: reemplazar por tu URL real de LinkedIn.
-  linkedin: 'https://www.linkedin.com/in/TU-USUARIO',
-  cv: { en: '/cv/cesar-bugueno-cv-en.pdf', es: '/cv/cesar-bugueno-cv-es.pdf' },
+  // TODO(user): URL pública auténtica; no inventar enlace.
+  linkedin: null,
+  // TODO(user): autorizar y publicar los dos PDF antes de habilitar enlaces.
+  cv: { en: null, es: null },
+  // TODO(user): imagen OG PNG. Se conserva el SVG existente hasta entonces.
   ogImage: '/og.svg',
 } as const;

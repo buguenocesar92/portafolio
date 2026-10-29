@@ -20,6 +20,8 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: withastro/action@v6
+        env:
+          PUBLIC_BUILD_SHA: ${{ github.sha }}
         with:
           node-version: 24
   deploy:
