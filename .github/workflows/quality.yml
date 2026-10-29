@@ -23,8 +23,8 @@ jobs:
           cache: npm
       - name: Install from lockfile
         run: npm ci
-      - name: Static motion guards
-        run: npm run check:motion
+      - name: Dossier content and motion guards
+        run: node scripts/check-dossier.mjs
       - name: Astro production build
         run: npm run build
       - name: Check dist for secrets

@@ -10,9 +10,10 @@ interface Props {
   type?: 'website' | 'article';
   alternates?: Partial<Record<Lang, string>>;
   publishedAt?: string;
+  bodyClass?: string;
 }
 
-const { lang = 'es', type, alternates, publishedAt } = Astro.props;
+const { lang = 'es', type, alternates, publishedAt, bodyClass = '' } = Astro.props;
 const t = ui[lang];
 const title = Astro.props.title ?? t.title;
 const description = Astro.props.description ?? t.description;
@@ -29,7 +30,7 @@ const description = Astro.props.description ?? t.description;
     <link rel="sitemap" href="/sitemap-index.xml" />
     <SEO {title} {description} {lang} {type} {alternates} {publishedAt} />
   </head>
-  <body class="bg-background text-foreground min-h-screen font-sans antialiased">
+  <body class:list={["bg-background text-foreground min-h-screen font-sans antialiased", bodyClass]}>
     <a
       href="#main"
       class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:bg-primary focus:px-3 focus:py-2 focus:text-primary-foreground"

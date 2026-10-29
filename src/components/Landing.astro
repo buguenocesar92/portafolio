@@ -1,113 +1,176 @@
 ---
+import '../styles/dossier.css';
+import '../styles/dossier-green.css';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import StatusBar from './StatusBar.astro';
-import InfrastructureExperience from './infrastructure/InfrastructureExperience';
-import ArchitectureDiagram from './infrastructure/ArchitectureDiagram.astro';
-import CaseCard from './CaseCard.astro';
-import SpotlightCard from './motion/SpotlightCard.astro';
-import TerminalTyper from './motion/TerminalTyper.astro';
-import MagneticButton from './motion/MagneticButton.astro';
-import MarqueeTags from './motion/MarqueeTags.astro';
-import ScrollProgress from './motion/ScrollProgress.astro';
-import ScrambleHeading from './motion/ScrambleHeading.astro';
-import { ui, blueprint, showcase, type Lang } from '../i18n/ui';
+import { dossier, type DossierLang } from '../data/dossier';
 import { getCasesByLang } from '../lib/cms';
-
-interface Props { lang: Lang }
-const { lang } = Astro.props;
-const t = ui[lang];
-const cases = await getCasesByLang(lang);
-const tags = Array.from(new Set(showcase[lang].flatMap((project) => project.chips)));
-const accent = {
-  amber: 'border-amber-forge/40 text-amber-forge',
-  emerald: 'border-emerald-term/40 text-emerald-term',
-} as const;
+interface Props { lang: DossierLang }
+const {lang}=Astro.props;
+const d=dossier[lang];
+const archive=await getCasesByLang(lang);
+const filters = lang === 'es'
+  ? [{id:'all',label:'Todos'},{id:'platform',label:'Plataformas'},{id:'security',label:'Seguridad'},{id:'infra',label:'Infraestructura'}]
+  : [{id:'all',label:'All'},{id:'platform',label:'Platforms'},{id:'security',label:'Security'},{id:'infra',label:'Infrastructure'}];
+const categoryOf = (id:string) => (id === 'recovery' || id === 'privacy') ? 'security'
+  : id === 'platform' ? 'infra' : 'platform';
+const counts: Record<string,number> = {all:d.projects.length,platform:2,security:2,infra:1};
 ---
-<BaseLayout lang={lang} alternates={{ es: '/', en: '/en/' }}>
-  <ScrollProgress label={t.hudBuild} />
-  <StatusBar {lang} />
-  <main id="main" class="mx-auto max-w-6xl px-4">
-    <section class="relative py-16 sm:py-28" aria-labelledby="hero-title">
-      <div class="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_50%_5%,rgba(16,185,129,.085),transparent_55%)]" aria-hidden="true"></div>
-      <TerminalTyper command={t.heroCommand} />
-      <h1 id="hero-title" data-split-reveal class="mt-7 max-w-5xl text-4xl leading-tight font-bold tracking-tight text-slate-50 sm:text-5xl lg:text-6xl">
-        {t.h1}
-      </h1>
-      <p class="mt-6 max-w-3xl text-base leading-relaxed text-slate-300 sm:text-lg">{t.subtitle}</p>
-      <div class="mt-9 flex flex-wrap gap-3">
-        <MagneticButton href="#hefesto">[{t.ctaPrimary}]</MagneticButton>
-        <MagneticButton href="#cases" variant="secondary">[{t.ctaSecondary}]</MagneticButton>
+<BaseLayout {lang} title={d.title} description={d.description} bodyClass="dossier-page" alternates={{es:'/',en:'/en/'}}>
+  <div class="dossier">
+    <header class="d-header" id="top">
+      <div class="d-shell d-header__inner">
+        <a class="d-signature" href={lang==='es'?'/':'/en/'} aria-label="César Bugueño">
+          <span class="d-signature__mark">C<span>/</span>B</span>
+          <span class="d-signature__name">CÉSAR BUGUEÑO <small>SOFTWARE ENGINEER</small></span>
+        </a>
+        <nav class="d-nav" aria-label={d.nav.intro}>
+          <a href="#work">{d.nav.work}</a><a href="#principles">{d.nav.principles}</a><a href="#experience">{d.nav.experience}</a><a href="#contact">{d.nav.contact}</a>
+        </nav>
+        <a class="d-language" href={lang==='es'?'/en/':'/'} hreflang={lang==='es'?'en':'es'}>{d.nav.toggle} ↗</a>
+        <details class="d-mobile-nav">
+          <summary aria-label={lang==='es'?'Abrir menú de navegación':'Open navigation menu'}>
+            <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+          </summary>
+          <nav aria-label={d.nav.intro}>
+            <a href="#work">{d.nav.work}</a><a href="#principles">{d.nav.principles}</a>
+            <a href="#experience">{d.nav.experience}</a><a href="#contact">{d.nav.contact}</a>
+          </nav>
+        </details>
       </div>
-    </section>
-
-    <MarqueeTags tags={tags} label={t.marqueeLabel} />
-
-    <section id="hefesto" class="scroll-mt-24 py-20" aria-labelledby="blueprint-title">
-      <h2 id="blueprint-title" class="mb-6 font-mono text-sm tracking-widest text-emerald-term uppercase">
-        // {t.blueprintTitle}
-      </h2>
-      <InfrastructureExperience client:visible layers={blueprint[lang]} title={t.blueprintTitle} hint={t.blueprintHint} schematicLabel={t.schematicLabel} />
-      <div class="mt-5">
-        <ArchitectureDiagram
-          title={t.diagramTitle}
-          description={t.diagramDescription}
-          labels={t.diagramNodes}
-        />
-      </div>
-    </section>
-
-    <section class="pb-20" aria-labelledby="showcase-title">
-      <ScrambleHeading id="showcase-title" as="h2" text={t.showcaseTitle} class="mb-6 font-mono text-sm tracking-widest text-amber-forge uppercase" />
-      <div class="grid gap-4 md:grid-cols-2">
-        {showcase[lang].map((s) => (
-          <SpotlightCard accent={s.accent} class={s.wide ? 'md:col-span-2' : ''}>
-            <p class:list={['inline-block rounded border px-2 py-0.5 font-mono text-xs', accent[s.accent]]}>{s.tag}</p>
-            <h3 class="mt-4 text-xl font-semibold text-slate-100">{s.title}</h3>
-            <p class="mt-3 max-w-3xl text-sm leading-relaxed text-slate-300">{s.body}</p>
-            <ul class="mt-5 flex flex-wrap gap-2">
-              {s.chips.map((chip) => (
-                <li class="rounded border border-slate-800/80 bg-obsidian px-2 py-1 font-mono text-[11px] text-slate-300">{chip}</li>
-              ))}
-            </ul>
-          </SpotlightCard>
-        ))}
-      </div>
-    </section>
-
-    <section id="cases" class="scroll-mt-24 pb-24" aria-labelledby="cases-title" data-reveal>
-      <h2 id="cases-title" class="mb-6 font-mono text-sm tracking-widest text-emerald-term uppercase">// {t.casesTitle}</h2>
-      {cases.length === 0 ? (
-        <p class="font-mono text-sm text-slate-400">{t.casesEmpty}</p>
-      ) : (
-        <div class="grid gap-4 md:grid-cols-2">
-          {cases.map((item) => <CaseCard case={item} lang={lang} />)}
+    </header>
+    <main id="main">
+      <section class="d-hero" aria-labelledby="d-main-heading">
+        <div class="d-shell">
+          <div class="d-hero__top"><p class="d-label">{d.eyebrow}</p><p>{d.heroRole}</p></div>
+          <h1 id="d-main-heading" class="d-hero__title">
+            {d.heroLines.map((line,index)=><span class:list={[index===2&&'d-hero__title-accent']}>{line}</span>)}
+          </h1>
+          <div class="d-hero__bottom">
+            <div class="d-hero__aside" aria-hidden="true"><span>✳</span> {d.heroAside}</div>
+            <div class="d-hero__description">
+              <p>{d.heroCopy}</p>
+              <div class="d-hero__links"><a class="d-link-strong" href="#work">{d.heroLink} ↘</a><a href="#principles">{d.heroSecondary}</a></div>
+            </div>
+          </div>
         </div>
-      )}
-    </section>
-  </main>
-  <footer class="border-t border-slate-800/80 py-8 text-center font-mono text-xs text-slate-400">
-    <p>© {new Date().getFullYear()} César Bugueño · {t.footer}</p>
-  </footer>
+      </section>
+      <section class="d-sheet" aria-labelledby="d-sheet-heading">
+        <div class="d-shell d-sheet__inner">
+          <div class="d-sheet__intro" data-reveal>
+            <span class="d-label">{d.sheet.pre}</span>
+            <h2 id="d-sheet-heading">{d.sheet.title}</h2>
+          </div>
+          <div class="d-sheet__layers" role="list">
+            {d.sheet.labels.map((label,index)=>
+              <div class="d-sheet__layer" role="listitem" data-reveal>
+                <span>0{index+1} <i aria-hidden="true">━━</i></span><h3>{label}</h3><p>{d.sheet.captions[index]}</p>
+              </div>
+            )}
+          </div>
+          <p class="d-sheet__note">{d.sheet.foot}</p>
+        </div>
+      </section>
+      <section id="work" class="d-work d-section" aria-labelledby="d-work-heading">
+        <div class="d-shell">
+          <div class="d-section__head" data-reveal>
+            <p class="d-label">{d.indexLabel}</p><h2 id="d-work-heading">{d.workTitle}</h2><p>{d.workDescription}</p>
+          </div>
+          <div class="d-filters" data-project-filters hidden role="group" aria-label={lang==='es'?'Filtrar proyectos':'Filter projects'}>
+            <span class="d-filters__legend">{lang==='es'?'FILTRAR POR':'FILTER BY'}</span>
+            <div class="d-filters__controls">
+              {filters.map((filter,index)=><button type="button" data-filter={filter.id} aria-pressed={index===0}>
+                {filter.label} <span>({counts[filter.id]})</span>
+              </button>)}
+            </div>
+            <span class="d-filters__count" aria-live="polite">{d.projects.length} / {d.projects.length}</span>
+          </div>
+          <div class="d-projects">
+            {d.projects.map(project=>
+              <article class:list={['d-project',project.emphasis&&'d-project--feature']} id={project.id} data-project-category={categoryOf(project.id)}>
+                <div class="d-project__heading" data-reveal>
+                  <div class="d-project__meta"><span>{project.number} / 05</span><span>{project.kicker}</span><span>{project.year}</span></div>
+                  <div class="d-project__body">
+                    <h3>{project.title}</h3>
+                    <div class="d-project__side"><p>{project.summary}</p><div class="d-project__tags">{project.technologies.slice(0,4).map(tech=><span>{tech}</span>)}</div></div>
+                  </div>
+                </div>
+                <details class="d-project__details">
+                  <summary><span>{d.projectAction}</span><span class="d-project__details-icon" aria-hidden="true">＋</span></summary>
+                  <div class="d-project__expanded">
+                    <div><h4>{d.projectLabels.context}</h4><p>{project.context}</p><p>{project.contribution}</p></div>
+                    <div><h4>{d.projectLabels.decisions}</h4><ol>{project.decisions.map(decision=><li>{decision}</li>)}</ol></div>
+                    <div class="d-project__evidence"><h4>{d.projectLabels.status}</h4><p>{project.proof}</p>
+                      {project.link&&<a href={project.link.url} target="_blank" rel="noopener noreferrer">{project.link.label} ↗</a>}
+                    </div>
+                  </div>
+                </details>
+              </article>
+            )}
+          </div>
+          <p class="d-work__disclaimer">{d.caseDisclaimer}</p>
+          {archive.length>0&&<div class="d-archive">
+            <p class="d-label">{lang==='es'?'ARCHIVO / DOCUMENTACIÓN':'ARCHIVE / DOCUMENTATION'}</p>
+            <div>{archive.map(c=><a href={`/cases/${c.slug}/`}><span>{c.category}</span><strong>{c.title}</strong><span aria-hidden="true">↗</span></a>)}</div>
+          </div>}
+        </div>
+      </section>
+      <section class="d-principles d-section" id="principles" aria-labelledby="d-principles-heading">
+        <div class="d-shell">
+          <p class="d-label d-label--light">{d.principles.number}</p>
+          <div class="d-principles__grid">
+            <div data-reveal><p class="d-principles__eyebrow">{d.principles.label}</p><h2 id="d-principles-heading">{d.principles.title}</h2><p>{d.principles.description}</p></div>
+            <ol class="d-principles__list">{d.principles.rows.map((item,index)=><li data-reveal><span>0{index+1}</span><div><h3>{item.title}</h3><p>{item.body}</p></div></li>)}</ol>
+          </div>
+        </div>
+      </section>
+      <section class="d-experience d-section" id="experience" aria-labelledby="d-experience-heading">
+        <div class="d-shell">
+          <div class="d-section__head d-section__head--compact" data-reveal>
+            <p class="d-label">{d.experience.number}</p><h2 id="d-experience-heading">{d.experience.title}</h2><p>{d.experience.description}</p>
+          </div>
+          <ol class="d-timeline">{d.experience.rows.map(job=><li data-reveal>
+            <span>{job.period}</span><div><h3>{job.role}</h3><p>{job.organization}</p></div><p>{job.text}</p>
+          </li>)}</ol>
+        </div>
+      </section>
+    </main>
+    <footer class="d-footer" id="contact">
+      <div class="d-shell">
+        <div class="d-footer__top"><p class="d-label d-label--light">04 / CONTACT</p><a href="#top">{d.footer.top} ↑</a></div>
+        <h2>{d.footer.title}</h2><p class="d-footer__message">{d.footer.body}</p>
+        <div class="d-footer__links">
+          <a class="d-footer__primary" href="https://hefesto-studio.cl/" target="_blank" rel="noopener noreferrer">{d.footer.contact} ↗</a>
+          <a href="https://github.com/buguenocesar92" target="_blank" rel="me noopener noreferrer">{d.footer.github} ↗</a>
+          <a href="https://hefesto-studio.cl/" target="_blank" rel="noopener noreferrer">{d.footer.studio} ↗</a>
+        </div>
+        <div class="d-footer__bottom"><span>CÉSAR BUGUEÑO © {new Date().getFullYear()}</span><span>{d.footer.signature}</span></div>
+      </div>
+    </footer>
+  </div>
 </BaseLayout>
 <script>
-  import { mountMotion } from '../lib/motion';
-  let cleanup: (() => void) | undefined;
-  const query = matchMedia('(prefers-reduced-motion: reduce)');
-  const start = () => {
-    cleanup?.();
-    cleanup = query.matches ? undefined : mountMotion();
-  };
-  const onPreferenceChange = () => start();
-  const dispose = () => {
-    cleanup?.();
-    query.removeEventListener('change', onPreferenceChange);
-    removeEventListener('pagehide', dispose);
-  };
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', start, { once: true });
-  } else {
-    start();
+  import {mountMotion} from '../lib/motion';
+  let cleanup:(()=>void)|undefined;
+  const filters = document.querySelector<HTMLElement>('[data-project-filters]');
+  if(filters) {
+    filters.hidden=false;
+    const buttons=Array.from(filters.querySelectorAll<HTMLButtonElement>('button[data-filter]'));
+    const cards=Array.from(document.querySelectorAll<HTMLElement>('.d-project[data-project-category]'));
+    const status=filters.querySelector<HTMLElement>('.d-filters__count');
+    const update=(current:string)=>{
+      buttons.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.filter===current)));
+      let visible=0;
+      cards.forEach(card=>{
+        const selected=current==='all'||card.dataset.projectCategory===current;
+        card.hidden=!selected;
+        if(selected) visible++;
+      });
+      if(status) status.textContent=`${visible} / ${cards.length}`;
+    };
+    buttons.forEach(button=>button.addEventListener('click',()=>update(button.dataset.filter??'all')));
   }
-  query.addEventListener('change', onPreferenceChange);
-  addEventListener('pagehide', dispose);
+  const start=()=>{cleanup?.();cleanup=mountMotion();};
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start,{once:true});
+  else start();
+  window.addEventListener('pagehide',()=>cleanup?.(),{once:true});
 </script>
