@@ -1,9 +1,11 @@
-name: Deploy a GitHub Pages
+name: Deploy Portafolio (Cloudflare Pages + GitHub Pages)
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
+  repository_dispatch:
+    types: [cms-updated]
 
 permissions:
   contents: read
@@ -18,12 +20,30 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: withastro/action@v6
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+      - run: npm ci --no-audit --no-fund
+      - name: Build Astro SSG (consumiendo Hefesto CMS si está configurado)
+        run: npm run build
         env:
           PUBLIC_BUILD_SHA: ${{ github.sha }}
+          FILAMENT_API_URL: ${{ secrets.FILAMENT_API_URL }}
+          FILAMENT_API_TOKEN: ${{ secrets.FILAMENT_API_TOKEN }}
+      - name: Upload artifact for GitHub Pages
+        uses: actions/upload-pages-artifact@v4
         with:
-          node-version: 24
+          path: dist
+      - name: Deploy to Cloudflare Pages (si CLOUDFLARE_API_TOKEN existe)
+        if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: '95ed109343d1a28c31a107067cb41ddb'
+          command: pages deploy ./dist --project-name=cesarbugueno-dev --branch=main
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -32,4 +52,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@v4
