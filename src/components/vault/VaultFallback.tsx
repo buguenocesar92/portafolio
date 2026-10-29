@@ -1,15 +1,15 @@
 import type { VaultNodeId } from './vaultData';
 
-interface Props { selected: VaultNodeId }
+interface Props { selected: VaultNodeId; description: string }
 
 /** SVG real servido por SSR: no depende de JavaScript/WebGL. */
-export function VaultFallback({ selected }: Props) {
+export function VaultFallback({ selected, description }: Props) {
   const points: Record<VaultNodeId, [number, number]> = {
     hefesto: [140, 150], calify: [490, 150], kraftdo: [140, 424], secops: [490, 424],
   };
   return (
     <svg className="vault-fallback" viewBox="0 0 630 570" role="img"
-      aria-label="Modelo conceptual: núcleo aislado, anillos protectores y cuatro sistemas conectados">
+      aria-label={description}>
       <defs>
         <radialGradient id="vault-stage-glow">
           <stop stopColor="#10b981" stopOpacity=".21"/>
