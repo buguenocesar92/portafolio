@@ -1,0 +1,61 @@
+---
+import { SITE } from '../data/site';
+import { editorial, ui, type Lang } from '../i18n/ui';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const e = editorial[lang];
+const t = ui[lang];
+const buildSha = import.meta.env.PUBLIC_BUILD_SHA?.slice(0, 7) ?? 'local';
+---
+<header class="ed-header">
+  <div class="ed-header__inner">
+    <a class="ed-brand" href={t.homeHref} aria-label={e.brandAccessible}>
+      <span class="ed-brand__monogram" aria-hidden="true">C<span>.</span>B</span>
+      <span class="ed-brand__copy">
+        <strong>CÉSAR BUGUEÑO</strong>
+        <small>{e.brandRole}</small>
+      </span>
+    </a>
+    <nav class="ed-header__nav" aria-label={e.navigation}>
+      <a href="#work">{e.navWork}</a>
+      <a href="#architecture">{e.navArchitecture}</a>
+      <a href="#cases">{e.navCases}</a>
+    </nav>
+    <div class="ed-header__actions">
+      <a class="ed-header__language" href={t.altLangHref} hreflang={lang === 'es' ? 'en' : 'es'} aria-label={e.switchLanguage}>{t.altLangLabel}</a>
+      <a class="ed-header__studio" href="https://hefesto-studio.cl/" target="_blank" rel="noopener noreferrer">{e.studioLink} <span aria-hidden="true">↗</span></a>
+    </div>
+  </div>
+  <div class="ed-header__info">
+    <span>{e.headerInfo}</span>
+    <span class="ed-header__build">{e.buildLabel} <code>{buildSha}</code></span>
+    <button class="ed-motion-toggle" type="button" data-motion-toggle
+      aria-pressed="false"
+      data-stop={e.pauseMotion}
+      data-play={e.resumeMotion}
+      aria-label={e.pauseMotion}>
+      <span aria-hidden="true">✳</span> <span data-motion-label>{e.pauseMotion}</span>
+    </button>
+  </div>
+</header>
+<script>
+  const button = document.querySelector<HTMLButtonElement>('[data-motion-toggle]');
+  if (button) {
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+    const refresh = () => {
+      const paused = document.documentElement.classList.contains('motion-paused') || reduced.matches;
+      button.setAttribute('aria-pressed', paused ? 'true' : 'false');
+      button.setAttribute('aria-label', paused ? button.dataset.play ?? '' : button.dataset.stop ?? '');
+      const label = button.querySelector<HTMLElement>('[data-motion-label]');
+      if (label) label.textContent = paused ? button.dataset.play ?? '' : button.dataset.stop ?? '';
+    };
+    button.addEventListener('click', () => {
+      document.documentElement.classList.toggle('motion-paused');
+      refresh();
+      dispatchEvent(new Event('portfolio-motion-change'));
+    });
+    reduced.addEventListener('change', refresh);
+    refresh();
+  }
+</script>
