@@ -36,8 +36,15 @@ jobs:
         uses: actions/upload-pages-artifact@v4
         with:
           path: dist
+      # secrets no está disponible en `if:`; se detecta en un paso aparte sin exponer
+      # el token al resto del job (npm ci / build).
+      - name: Detectar token de Cloudflare
+        id: cf
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: if [ -n "$CF_TOKEN" ]; then echo "habilitado=true" >> "$GITHUB_OUTPUT"; fi
       - name: Deploy to Cloudflare Pages (si CLOUDFLARE_API_TOKEN existe)
-        if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+        if: ${{ steps.cf.outputs.habilitado == 'true' }}
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
